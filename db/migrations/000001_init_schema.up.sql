@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS rooms(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS reservations(
+    id SERIAL PRIMARY KEY,
+    room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX idx_room_id ON reservations(room_id);

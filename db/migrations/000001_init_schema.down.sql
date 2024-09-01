@@ -1,0 +1,5 @@
+DROP INDEX IF EXISTS idx_room_id;
+
+DROP TABLE IF EXISTS reservations;
+
+DROP TABLE IF EXISTS rooms;
