@@ -16,12 +16,12 @@ INSERT INTO reservations(room_id, start_time, end_time) VALUES ($1, $2, $3) RETU
 `
 
 type CreateReservationParams struct {
-	RoomID    int32
-	StartTime pgtype.Timestamptz
-	EndTime   pgtype.Timestamptz
+	RoomID    string             `db:"room_id" json:"room_id"`
+	StartTime pgtype.Timestamptz `db:"start_time" json:"start_time"`
+	EndTime   pgtype.Timestamptz `db:"end_time" json:"end_time"`
 }
 
-func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationParams) (Reservation, error) {
+func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationParams) (*Reservation, error) {
 	row := q.db.QueryRow(ctx, createReservation, arg.RoomID, arg.StartTime, arg.EndTime)
 	var i Reservation
 	err := row.Scan(
@@ -30,7 +30,7 @@ func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationPa
 		&i.StartTime,
 		&i.EndTime,
 	)
-	return i, err
+	return &i, err
 }
 
 const deleteReservation = `-- name: DeleteReservation :exec
@@ -46,13 +46,13 @@ const getAllReservations = `-- name: GetAllReservations :many
 SELECT id, room_id, start_time, end_time FROM reservations
 `
 
-func (q *Queries) GetAllReservations(ctx context.Context) ([]Reservation, error) {
+func (q *Queries) GetAllReservations(ctx context.Context) ([]*Reservation, error) {
 	rows, err := q.db.Query(ctx, getAllReservations)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Reservation
+	var items []*Reservation
 	for rows.Next() {
 		var i Reservation
 		if err := rows.Scan(
@@ -63,7 +63,36 @@ func (q *Queries) GetAllReservations(ctx context.Context) ([]Reservation, error)
 		); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, &i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllReservationsByRoomID = `-- name: GetAllReservationsByRoomID :many
+SELECT id, room_id, start_time, end_time FROM reservations WHERE room_id = $1
+`
+
+func (q *Queries) GetAllReservationsByRoomID(ctx context.Context, roomID string) ([]*Reservation, error) {
+	rows, err := q.db.Query(ctx, getAllReservationsByRoomID, roomID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*Reservation
+	for rows.Next() {
+		var i Reservation
+		if err := rows.Scan(
+			&i.ID,
+			&i.RoomID,
+			&i.StartTime,
+			&i.EndTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -75,7 +104,7 @@ const getReservation = `-- name: GetReservation :one
 SELECT id, room_id, start_time, end_time FROM reservations WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetReservation(ctx context.Context, id int32) (Reservation, error) {
+func (q *Queries) GetReservation(ctx context.Context, id int32) (*Reservation, error) {
 	row := q.db.QueryRow(ctx, getReservation, id)
 	var i Reservation
 	err := row.Scan(
@@ -84,36 +113,7 @@ func (q *Queries) GetReservation(ctx context.Context, id int32) (Reservation, er
 		&i.StartTime,
 		&i.EndTime,
 	)
-	return i, err
-}
-
-const getReservationsByRoomID = `-- name: GetReservationsByRoomID :many
-SELECT id, room_id, start_time, end_time FROM reservations WHERE room_id = $1
-`
-
-func (q *Queries) GetReservationsByRoomID(ctx context.Context, roomID int32) ([]Reservation, error) {
-	rows, err := q.db.Query(ctx, getReservationsByRoomID, roomID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Reservation
-	for rows.Next() {
-		var i Reservation
-		if err := rows.Scan(
-			&i.ID,
-			&i.RoomID,
-			&i.StartTime,
-			&i.EndTime,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return &i, err
 }
 
 const updateReservation = `-- name: UpdateReservation :one
@@ -126,13 +126,13 @@ RETURNING id, room_id, start_time, end_time
 `
 
 type UpdateReservationParams struct {
-	ID        int32
-	RoomID    int32
-	StartTime pgtype.Timestamptz
-	EndTime   pgtype.Timestamptz
+	ID        int32              `db:"id" json:"id"`
+	RoomID    string             `db:"room_id" json:"room_id"`
+	StartTime pgtype.Timestamptz `db:"start_time" json:"start_time"`
+	EndTime   pgtype.Timestamptz `db:"end_time" json:"end_time"`
 }
 
-func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationParams) (Reservation, error) {
+func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationParams) (*Reservation, error) {
 	row := q.db.QueryRow(ctx, updateReservation,
 		arg.ID,
 		arg.RoomID,
@@ -146,5 +146,5 @@ func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationPa
 		&i.StartTime,
 		&i.EndTime,
 	)
-	return i, err
+	return &i, err
 }

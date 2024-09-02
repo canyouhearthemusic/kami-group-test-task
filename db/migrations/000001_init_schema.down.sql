@@ -1,4 +1,4 @@
-DROP INDEX IF EXISTS idx_room_id;
+DROP INDEX IF EXISTS idx_reservations_room_id;
 
 DROP TABLE IF EXISTS reservations;
 

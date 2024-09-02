@@ -19,6 +19,7 @@ func New(configs ...Configuration) (r *Server, err error) {
 			return
 		}
 	}
+
 	return
 }
 
@@ -28,6 +29,7 @@ func WithHTTPServer(handler http.Handler, port string) Configuration {
 			Addr:    ":" + port,
 			Handler: handler,
 		}
+
 		return nil
 	}
 }

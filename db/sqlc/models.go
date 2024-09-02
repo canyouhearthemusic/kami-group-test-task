@@ -9,13 +9,8 @@ import (
 )
 
 type Reservation struct {
-	ID        int32
-	RoomID    int32
-	StartTime pgtype.Timestamptz
-	EndTime   pgtype.Timestamptz
-}
-
-type Room struct {
-	ID   int32
-	Name string
+	ID        int32              `db:"id" json:"id"`
+	RoomID    string             `db:"room_id" json:"room_id"`
+	StartTime pgtype.Timestamptz `db:"start_time" json:"start_time"`
+	EndTime   pgtype.Timestamptz `db:"end_time" json:"end_time"`
 }

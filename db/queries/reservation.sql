@@ -1,7 +1,7 @@
 -- name: GetReservation :one
 SELECT * FROM reservations WHERE id = $1 LIMIT 1;
 
--- name: GetReservationsByRoomID :many
+-- name: GetAllReservationsByRoomID :many
 SELECT * FROM reservations WHERE room_id = $1;
 
 -- name: GetAllReservations :many
