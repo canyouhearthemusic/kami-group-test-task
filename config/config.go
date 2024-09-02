@@ -2,6 +2,8 @@ package config
 
 import (
 	"context"
+	"log"
+	"sync"
 
 	"github.com/joho/godotenv"
 	"github.com/sethvargo/go-envconfig"
@@ -25,16 +27,23 @@ type Config struct {
 	Database Database
 }
 
+var once sync.Once
+var cfg *Config
+
 func MustLoad(ctx context.Context) (*Config, error) {
-	cfg := new(Config)
+	once.Do(func() {
+		cfg = new(Config)
 
-	if err := godotenv.Load(); err != nil {
-		return nil, err
-	}
+		if err := godotenv.Load(); err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+			return
+		}
 
-	if err := envconfig.Process(ctx, cfg); err != nil {
-		return nil, err
-	}
+		if err := envconfig.Process(ctx, cfg); err != nil {
+			log.Fatalf("Error processing environment variables: %v", err)
+			return
+		}
+	})
 
 	return cfg, nil
 }

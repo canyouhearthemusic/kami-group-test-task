@@ -7,10 +7,6 @@ import (
 	"github.com/canyouhearthemusic/kamigr/db/sqlc"
 )
 
-func NewService(dao *sqlc.Queries) *Service {
-	return &Service{dao: dao}
-}
-
 func (s *Service) CreateReservation(ctx context.Context, sqlcreq sqlc.CreateReservationParams) (*sqlc.Reservation, error) {
 	existingReservations, err := s.GetAllReservationsByRoomID(ctx, sqlcreq.RoomID)
 	if err != nil {
