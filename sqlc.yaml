@@ -12,3 +12,4 @@ sql:
         emit_db_tags: true
         emit_json_tags: true
         emit_result_struct_pointers: true
+        
