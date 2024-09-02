@@ -16,9 +16,9 @@ INSERT INTO reservations(room_id, start_time, end_time) VALUES ($1, $2, $3) RETU
 `
 
 type CreateReservationParams struct {
-	RoomID    string             `db:"room_id" json:"room_id"`
-	StartTime pgtype.Timestamptz `db:"start_time" json:"start_time"`
-	EndTime   pgtype.Timestamptz `db:"end_time" json:"end_time"`
+	RoomID    string           `db:"room_id" json:"room_id"`
+	StartTime pgtype.Timestamp `db:"start_time" json:"start_time"`
+	EndTime   pgtype.Timestamp `db:"end_time" json:"end_time"`
 }
 
 func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationParams) (*Reservation, error) {
@@ -126,10 +126,10 @@ RETURNING id, room_id, start_time, end_time
 `
 
 type UpdateReservationParams struct {
-	ID        int32              `db:"id" json:"id"`
-	RoomID    string             `db:"room_id" json:"room_id"`
-	StartTime pgtype.Timestamptz `db:"start_time" json:"start_time"`
-	EndTime   pgtype.Timestamptz `db:"end_time" json:"end_time"`
+	ID        int32            `db:"id" json:"id"`
+	RoomID    string           `db:"room_id" json:"room_id"`
+	StartTime pgtype.Timestamp `db:"start_time" json:"start_time"`
+	EndTime   pgtype.Timestamp `db:"end_time" json:"end_time"`
 }
 
 func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationParams) (*Reservation, error) {

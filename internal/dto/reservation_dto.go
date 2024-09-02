@@ -37,8 +37,8 @@ func (dto *ReservationDTO) Validate() error {
 }
 
 func (dto *ReservationDTO) ConvertToSQLC() (sqlc.CreateReservationParams, error) {
-	var stp pgtype.Timestamptz
-	var etp pgtype.Timestamptz
+	var stp pgtype.Timestamp
+	var etp pgtype.Timestamp
 
 	st, err := time.Parse(time.DateTime, dto.StartTime)
 	if err != nil {

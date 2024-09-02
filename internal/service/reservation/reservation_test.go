@@ -26,15 +26,15 @@ func TestCreateReservation_NoOverlap(t *testing.T) {
 
 	rsrv, _ := s.CreateReservation(ctx, sqlc.CreateReservationParams{
 		RoomID:    roomID,
-		StartTime: pgtype.Timestamptz{Time: startTime1},
-		EndTime:   pgtype.Timestamptz{Time: endTime1},
+		StartTime: pgtype.Timestamp{Time: startTime1},
+		EndTime:   pgtype.Timestamp{Time: endTime1},
 	})
 	require.NotNil(t, rsrv)
 
 	rsrv2, _ := s.CreateReservation(ctx, sqlc.CreateReservationParams{
 		RoomID:    roomID,
-		StartTime: pgtype.Timestamptz{Time: startTime2},
-		EndTime:   pgtype.Timestamptz{Time: endTime2},
+		StartTime: pgtype.Timestamp{Time: startTime2},
+		EndTime:   pgtype.Timestamp{Time: endTime2},
 	})
 	require.NotNil(t, rsrv2)
 }
@@ -50,15 +50,15 @@ func TestCreateReservation_Overlap(t *testing.T) {
 
 	_, err := s.CreateReservation(ctx, sqlc.CreateReservationParams{
 		RoomID:    roomID,
-		StartTime: pgtype.Timestamptz{Time: startTime},
-		EndTime:   pgtype.Timestamptz{Time: endTime},
+		StartTime: pgtype.Timestamp{Time: startTime},
+		EndTime:   pgtype.Timestamp{Time: endTime},
 	})
 	require.NoError(t, err)
 
 	_, err = s.CreateReservation(ctx, sqlc.CreateReservationParams{
 		RoomID:    roomID,
-		StartTime: pgtype.Timestamptz{Time: startTime.Add(30 * time.Minute)},
-		EndTime:   pgtype.Timestamptz{Time: endTime.Add(30 * time.Minute)},
+		StartTime: pgtype.Timestamp{Time: startTime.Add(30 * time.Minute)},
+		EndTime:   pgtype.Timestamp{Time: endTime.Add(30 * time.Minute)},
 	})
 	require.Error(t, err)
 }
@@ -79,8 +79,8 @@ func TestConcurrentReservations(t *testing.T) {
 		go func() {
 			_, err := s.CreateReservation(ctx, sqlc.CreateReservationParams{
 				RoomID:    roomID,
-				StartTime: pgtype.Timestamptz{Time: startTime},
-				EndTime:   pgtype.Timestamptz{Time: endTime},
+				StartTime: pgtype.Timestamp{Time: startTime},
+				EndTime:   pgtype.Timestamp{Time: endTime},
 			})
 			errs <- err
 		}()
